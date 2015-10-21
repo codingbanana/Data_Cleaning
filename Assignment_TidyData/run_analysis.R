@@ -17,7 +17,7 @@ X_test <- read.table(file = "project/X_test.txt",header = F)
 X <- rbind(X_test,X_train)
 rm("X_test","X_train")
 # add colnames
-feature <- read.table(file="project/features.txt",header=F)
+feature <- read.table(file="project/features.txt",header=F,stringsAsFactors = F)
 feature <- feature[,2]
 colnames(X) <- feature
 # # assign variables, inialize values
@@ -64,14 +64,30 @@ xy <- cbind(sub,y_act[2])
 rm(y_act)
 # 4. Appropriately labels the data set with descriptive variable names.
 xy_col <- colnames(xy)
-gsub("t","time",xy_col)
-gsub("f","frequency",xy_col)
-gsub("Acc","Acceleration", xy_col)
-gsub("gryo","", xy_col)
-gsub("mag","magnitude", xy_col)
-gsub("-mean()","Mean",xy_col)
-gsub("-std()","StandardDeviation",xy_col)
-gsub("-X","Xaxis",xy_col)
-gsub("-Y","Yaxis",xy_col)
-gsub("-Z","Zaxis",xy_col)
+#replace colnames with descriptive variable names
+temp <- gsub("Acc","Acceleration", xy_col)
+temp <- gsub("gyro","AngularVelocity", temp)
+temp <-gsub("Mag","Magnitude", temp)
+temp <-gsub("-mean()","Mean",temp)
+temp <-gsub("-std()","StandardDeviation",temp)
+temp <-gsub("-X","Xaxis",temp)
+temp <-gsub("-Y","Yaxis",temp)
+temp <-gsub("-Z","Zaxis",temp)
+for (i in 1:length(temp)) {
+    if (substr(temp[i],1,1)=="t") {
+        temp[i] <- paste("time",substring(temp[i],2),sep = "")
+    }
+    if (substr(temp[i],1,1)=="f") {
+        temp[i] <- paste("frequency",substring(temp[i],2),sep="")
+    }
+}
+#reassign colnames
+colnames(xy) <- temp
+rm(xy_col,i,feature,temp)
+rm(act,sub,X,y)
 # 5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+sub_test <- read.table("project/subject_test.txt",header = F)
+sub_train <- read.table("project/subject_train.txt", header=F)
+sub <- rbind(sub_test,sub_train)
+colnames(sub) <- "subject"
+xy_sub <- cbind(xy,sub)
