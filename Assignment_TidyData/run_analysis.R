@@ -91,3 +91,5 @@ sub_train <- read.table("project/subject_train.txt", header=F)
 sub <- rbind(sub_test,sub_train)
 colnames(sub) <- "subject"
 xy_sub <- cbind(xy,sub)
+avg_df <- ddply(.data = xy_sub,.variables = c("activity_name","subject"),.fun = "mean")
+#just a test
